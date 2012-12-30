@@ -1,0 +1,17 @@
+{
+    "name": "message-bug.js",
+    "description": "Javascript Message Bus for building modular (multi-page) applications in HTML5",
+    "version": "0.1.0",
+
+    "author": "David Beale <david.beale@bealearts.co.uk>",
+
+    "keywords": [
+        "javascript",
+        "module",
+        "message",
+        "bus",
+	"HTML5"
+    ],
+
+    "main": "./build/build.js"
+}
