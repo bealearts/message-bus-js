@@ -1,7 +1,7 @@
 
 "use strict;"
 
-importScripts('../src/message-bus.js');
+importScripts('../../../src/message-bus.js');
 
 
 MessageBus.send("Worker");

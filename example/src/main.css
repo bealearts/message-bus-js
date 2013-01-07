@@ -1,0 +1,27 @@
+
+html, body, object
+{
+	margin: 0px;
+	padding: 0px;
+}
+
+
+#shape-list
+{
+	position: absolute;
+	left: 13px;
+	top: 43px;
+	width: 155px;
+	height: 448px;
+}
+
+
+#shape-content
+{
+	position: absolute;
+	left: 178px;
+	top: 43px;
+	width: 662px; 
+	height: 447px;
+	background-color: #FFFFFF;
+}
