@@ -13,10 +13,9 @@
         <text id="label" x="25" y="20" style="font-family: verdana;" content-value="Hi" />
     </g>
 
+    <script type="application/ecmascript" xlink:href="../../../..//src/message-bus.js"/>
 
     <script type="application/ecmascript" xlink:href="widget.js" />
-    
-    <script type="application/ecmascript" xlink:href="../src/message-bus.js"/>
 
     <script>
         //button = new Button();  

@@ -46,52 +46,6 @@
 	        }
 	        
 	
-	
-	        /**
-	         * Send a message
-	         *
-	         * @param message The message to dispatch
-	         * @param scopes The scopes to dispatch the message in, defaults to null meaning all scopes
-	         */
-	        this.send = function(message, scopes)
-	        {
-	            if (!scopes)
-	            {
-	                scopes = ['global'];
-	            }
-	            else if (!Array.isArray(scopes))
-	            {
-	                scopes = [scopes];
-	            }
-	
-	            scopes.forEach(function(scope){
-	                scopedDispatch(message, scope);
-	            });
-
-	        	sendEnvelope(managedObject, new Envelope(message, scopes));	
-	        }
-	
-	
-	        /**
-	         * Receive messages
-	         */
-	        this.receive = function(callBack, scopes)
-	        {
-	            if (!scopes)
-	            {
-	                scopes = ['global'];
-	            }
-	            else if (!Array.isArray(scopes))
-	            {
-	                scopes = [scopes];
-	            }
-	
-	            scopes.forEach(function(scope){
-	                addListenerToScope(scope, callBack);
-	            });
-	        }
-	
-	
 	        
 	        /**
 	         * Set the allowed origin URIs
@@ -110,6 +64,108 @@
 	            }
 	        }
 	        
+	
+	        /**
+	         * Send a message
+	         *
+	         * @param message The message to dispatch
+	         * @param scopes The scopes to dispatch the message in. Defaults to null meaning all scopes
+	         * @param identifier Unique identifier for the message within the namespace. Defaults a String representing the object type of the message
+	         * @param namespace Namespace which the identifier is unique in. Defaults to the URI of the current page. 
+	         */
+	        this.send = function(message, scopes, identifier, namespace)
+	        {
+	            if (!scopes)
+	            {
+	                scopes = ['global'];
+	            }
+	            else if (!Array.isArray(scopes))
+	            {
+	                scopes = [scopes];
+	            }
+	
+	            if (!identifier)
+	            	identifier = getObjectType(message);
+	            
+	            if (!namespace)
+	            	namespace = getCurrentURI();
+	            
+	            scopes.forEach(function(scope){
+	                scopedDispatch(message, scope, identifier, namespace);
+	            });
+
+	        	sendEnvelope(managedObject, new Envelope(message, scopes));	
+	        }
+	
+	
+	        /**
+	         * Receive messages
+	         * 
+	         * @param callBack Function to call when a matching message is received
+	         * @param scopes The scopes to match the message by. Defaults to null meaning all scopes
+	         * @param identifier Unique identifier to match the message by within the namespace. Defaults to null meaning any identifier
+	         * @param namespace Namespace which the identifier is unique in. Defaults to null meaning any Namespace 
+	         */
+	        this.receive = function(callBack, scopes, identifier, namespace)
+	        {
+	            if (!scopes)
+	            {
+	                scopes = ['global'];
+	            }
+	            else if (!Array.isArray(scopes))
+	            {
+	                scopes = [scopes];
+	            }
+	
+	            scopes.forEach(function(scope){
+	                addListenerToScope(scope, callBack, identifier, namespace);
+	            });
+	        }
+	
+	
+	      
+	        /**
+	         * Publishes an object's property so that changes are sent to Subscribers
+	         * 
+	         * @param object Host object of the property
+	         * @param propertyNamee Property to publish. Will be modified to call MessageBus.publishValue()
+	         * @param scopes The scopes to dispatch the property in. Defaults to null meaning all scopes
+	         * @param identifier Unique identifier for the property within the namespace. Defaults a String representing the object type of the message
+	         * @param namespace Namespace which the identifier is unique in. Defaults to the URI of the current page.  
+	         */
+	        this.publish = function(object, propertyName, scopes, identifier, namespace)
+	        {
+	        	info = Object.getOwnPropertyDescriptor(object, propertyName);
+	        }
+	        
+	        
+	        /**
+	         * Publishes an object's property so that changes are sent to Subscribers
+	         * 
+	         * @param object Object to send to Subscribers
+	         * @param scopes The scopes to dispatch the object in. Defaults to null meaning all scopes
+	         * @param identifier Unique identifier for the object within the namespace. Defaults a String representing the object type of the message
+	         * @param namespace Namespace which the identifier is unique in. Defaults to the URI of the current page.  
+	         */
+	        this.publishValue = function(object, scopes, identifier, namespace)
+	        {
+	        	
+	        }
+	        
+
+	        /**
+	         * Subscribes to a published object's property.
+	         * 
+	         * @param object Host object of the property
+	         * @param propertyName property to set when changes are received
+	         * @param scopes The scopes to match the property by. Defaults to null meaning all scopes
+	         * @param identifier Unique identifier to match the property by within the namespace. Defaults to null meaning any identifier
+	         * @param namespace Namespace which the identifier is unique in. Defaults to null meaning any Namespace 
+	         */	
+	        this.subscribe = function(object, propertyName, scopes, identifier, namespace)
+	        {
+        	
+	        }
 	        
 	        
 	
@@ -184,7 +240,7 @@
 	         * @param message
 	         * @param scope
 	         */
-	        var scopedDispatch = function(message, scope)
+	        var scopedDispatch = function(message, scope, identifier, namespace)
 	        {
 	            // Auto register the scope
 	            scopedListeners.addScope(scope);
@@ -203,13 +259,15 @@
 	         * @param scope
 	         * @param callBack
 	         */
-	        var addListenerToScope = function(scope, callBack)
+	        var addListenerToScope = function(scope, callBack, identifier, namespace)
 	        {
 	            // Auto register the scope
 	            scopedListeners.addScope(scope);
 	
 	            var listeners = scopedListeners.getListeners(scope);
 	
+	            //var key = 
+	            
 	            if (listeners.indexOf(callBack) === -1)
 	            {
 	                listeners.push(callBack);
@@ -327,6 +385,24 @@
 	        }
 	        
 	        
+	        var getCurrentURI = function()
+	        {
+	        	return location.protocal+'//'+location.host+location.pathname;
+	        }
+	        
+	        
+	        var getObjectType = function(obj)
+	        {
+	        	if (obj && obj.constructor && obj.constructor.toString) 
+	        	{
+	                var result = obj.constructor.toString().match(/function\s*(\w+)/);
+
+	                if (result && result.length == 2)
+	                    return result[1];
+	            }
+
+	            return undefined;
+	        }
 	        
 	        
 	        // Register managed object on construction
@@ -381,11 +457,13 @@
         /**
          * Message Container
          */
-        var Envelope = function(msg, scopes, type)
+        var Envelope = function(msg, scopes, type, identifier, namespace)
         {
         	this.type = type || 'MESSAGE';
         	this.scopes = scopes || ['global'];
         	this.msg = msg || {};
+        	this.identifer = identifier;
+        	this.namespace = namespace;
         	this.originUid = '';
         }
         
