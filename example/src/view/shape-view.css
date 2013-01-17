@@ -5,6 +5,12 @@ html, body, object, img
 	padding: 0px;
 }
 
+body
+{
+	position: relative;
+	width: 662px;
+	height: 447px;
+}
 
 #shape-name
 {
@@ -14,4 +20,15 @@ html, body, object, img
 	color: #FFFFFF;
 	font-family: Copperplate;
 	font-size: 24px;
+}
+
+
+#shape-image
+{
+	xposition: absolute;
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+	
+	margin-top: -390px;	
 }

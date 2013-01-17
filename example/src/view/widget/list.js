@@ -39,18 +39,31 @@ function updateRenderers(data)
 		content.appendChild(newRenderer);
 		onRenderItem(item, newRenderer);
 		
+		// Select first
+		if (index == 0 && !selectedItem)
+		{
+			select(newRenderer, data, item);
+		}
+		
 		index++;
 	});
+		
 }
 
 
 function onClick(event, data, dataItem)
 {
+	select(event.currentTarget, data, dataItem);
+}
+
+
+function select(itemRenderer, data, dataItem)
+{
 	// Clear current selection
 	if (selectedItem)
 		selectedItem.setAttribute('class', '');
 	
-	selectedItem = event.currentTarget;
+	selectedItem = itemRenderer;
 	selectedItem.setAttribute('class', 'selected');
 	
 	// Find index

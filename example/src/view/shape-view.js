@@ -7,6 +7,7 @@ window.onload = function()
 		if (identifier === 'Shape')
 		{
 			updateView(message);
+			updateImage(message);
 		}
 	}, null, 'Shape');
 }
@@ -15,8 +16,13 @@ window.onload = function()
 
 function updateView(shape)
 {
-	//console.log(shape);
-	
 	var shapeName = document.getElementById('shape-name');
 	shapeName.textContent = shape.name;
+}
+
+
+function updateImage(shape)
+{	
+	var shapeImage = document.getElementById('shape-image');
+	shapeImage.src = shape.mainURL;
 }
