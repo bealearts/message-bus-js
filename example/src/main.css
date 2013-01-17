@@ -1,5 +1,5 @@
 
-html, body, object
+html, body, object, img
 {
 	margin: 0px;
 	padding: 0px;
@@ -13,6 +13,7 @@ html, body, object
 	top: 43px;
 	width: 155px;
 	height: 448px;
+	overflow: hidden;
 }
 
 
@@ -21,7 +22,7 @@ html, body, object
 	position: absolute;
 	left: 178px;
 	top: 43px;
-	width: 662px; 
-	height: 447px;
-	background-color: #FFFFFF;
+	width: 670px; 
+	height: 460px;
+	overflow: hidden;
 }

@@ -40,7 +40,7 @@
 	        	var tempUid = generateUid(); 
 	        	childManagedObjects[tempUid] = worker;
 	        	
-	        	sendEnvelope(worker, new Envelope(tempUid, [], 'REGISTER_PARENT'));
+	        	sendEnvelope(worker, new Envelope(tempUid, [], null, null, 'REGISTER_PARENT'));
 	        	
 	        	return worker;
 	        }
@@ -86,7 +86,7 @@
 	
 	            if (!identifier)
 	            	identifier = getObjectType(message);
-	            
+            
 	            if (!namespace)
 	            	namespace = getCurrentURI();
 	            
@@ -94,7 +94,7 @@
 	                scopedDispatch(message, scope, identifier, namespace);
 	            });
 
-	        	sendEnvelope(managedObject, new Envelope(message, scopes));	
+	        	sendEnvelope(managedObject, new Envelope(message, scopes, identifier, namespace));	
 	        }
 	
 	
@@ -213,7 +213,7 @@
 	        	// if not top level bus and not a worker, dispatch register child message type
 	        	if (!caller.isTopLevelBus && managedObject.parent)
 	        	{            	
-	            	sendEnvelope(managedObjectParent, new Envelope(uid, [], 'REGISTER_CHILD'));
+	            	sendEnvelope(managedObjectParent, new Envelope(uid, [], null, null, 'REGISTER_CHILD'));
 	        	}
 	        	
 	        }
@@ -245,10 +245,9 @@
 	            // Auto register the scope
 	            scopedListeners.addScope(scope);
 	
-	
-	            scopedListeners.getListeners(scope).forEach(function(listener){
-	                // Call the listener with the message and optional scope
-	                listener(message, scope);
+	            scopedListeners.getListeners(scope, identifier, namespace).forEach(function(listener){
+	                // Call the listener with the message
+	            	listener(message, scope, identifier, namespace);
 	            });
 	        }
 	
@@ -293,12 +292,12 @@
 		        	}
 		        	else
 		        	{
-		        		//console.log('MessageBus', managedObject.name, envelope.msg, event.source, uid, envelope.originUid);
+		        		//console.log('MessageBus', managedObject.name, envelope.msg, event.source, uid, envelope.originUid, envelope.identifier, envelope.namespace);
 		        		
 		        		if (envelope.originUid !== uid)
 		        		{
 		        			envelope.scopes.forEach(function(scope){
-		    	                scopedDispatch(envelope.msg, scope);
+		    	                scopedDispatch(envelope.msg, scope, envelope.identifier, envelope.namespace);
 		    	            });
 		        		}
     		
@@ -308,14 +307,14 @@
 		        			if (childManagedObjects.hasOwnProperty(childObjectUid) && envelope.originUid !== childObjectUid)
 		            		{		            			
 		            			var childObject = childManagedObjects[childObjectUid];
-		            			sendEnvelope(childObject, new Envelope(envelope.msg, envelope.scopes));
+		            			sendEnvelope(childObject, new Envelope(envelope.msg, envelope.scopes, envelope.identifier, envelope.namespace));
 		            		}
 		            	}
 		            	
 		            	// Forward to parent
 		        		if (managedObjectParent && (managedObjectParent !== managedObject) && event.source !== managedObjectParent)
 		        		{		        			
-		        			sendEnvelope(managedObjectParent, new Envelope(envelope.msg, envelope.scopes));
+		        			sendEnvelope(managedObjectParent, new Envelope(envelope.msg, envelope.scopes, envelope.identifier, envelope.namespace));
 		        		}
 		        	}
 	        	}
@@ -346,7 +345,7 @@
 		        		if (envelope.originUid !== uid)
 		        		{
 		        			envelope.scopes.forEach(function(scope){
-		    	                scopedDispatch(envelope.msg, scope);
+		    	                scopedDispatch(envelope.msg, scope, envelope.identifier, envelope.namespace);
 		    	            });
 		        		}
 		        			        		
@@ -356,7 +355,7 @@
 		            		if (childManagedObjects.hasOwnProperty(childObjectUid) && envelope.originUid !== childObjectUid)
 		            		{		            			
 		            			var childObject = childManagedObjects[childObjectUid];
-		            			sendEnvelope(childObject, new Envelope(envelope.msg, envelope.scopes));
+		            			sendEnvelope(childObject, new Envelope(envelope.msg, envelope.scopes, envelope.identifier, envelope.namespace));
 		            		}
 		            	}
 		        	}
@@ -387,7 +386,7 @@
 	        
 	        var getCurrentURI = function()
 	        {
-	        	return location.protocal+'//'+location.host+location.pathname;
+	        	return location.protocol+'//'+location.host+location.pathname;
 	        }
 	        
 	        
@@ -437,7 +436,7 @@
             }
 
 
-            this.getListeners = function(scope)
+            this.getListeners = function(scope, identifier, namespace)
             {
                 return scopes[scope];
             }
@@ -457,12 +456,12 @@
         /**
          * Message Container
          */
-        var Envelope = function(msg, scopes, type, identifier, namespace)
+        var Envelope = function(msg, scopes, identifier, namespace, type)
         {
         	this.type = type || 'MESSAGE';
         	this.scopes = scopes || ['global'];
-        	this.msg = msg || {};
-        	this.identifer = identifier;
+        	this.msg = msg;
+        	this.identifier = identifier;
         	this.namespace = namespace;
         	this.originUid = '';
         }

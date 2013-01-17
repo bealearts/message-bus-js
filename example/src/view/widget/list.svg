@@ -58,6 +58,11 @@
 			var icon = itemRenderer.getElementById('icon');
 			icon.setAttributeNS('http://www.w3.org/1999/xlink', 'href', dataItem.iconURL);	
 		}
+		
+		onSeleted = function(index)
+		{
+			MessageBus.send(index, null, 'SELECTED-SHAPE-INDEX');
+		}
 
 	</script>
 	

@@ -1,0 +1,17 @@
+
+html, body, object, img
+{
+	margin: 0px;
+	padding: 0px;
+}
+
+
+#shape-name
+{
+	position: absolute;
+	right: 24px;
+	top: 3px;
+	color: #FFFFFF;
+	font-family: Copperplate;
+	font-size: 24px;
+}

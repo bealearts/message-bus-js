@@ -1,7 +1,7 @@
 
 "use strict";
 
-var Shape = function(name, iconURL, mainURL)
+function Shape(name, iconURL, mainURL)
 {
 	this.name = name;
 	this.iconURL = iconURL;

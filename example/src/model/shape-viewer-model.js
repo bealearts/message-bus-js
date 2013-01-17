@@ -17,4 +17,14 @@ var shapes = [
 MessageBus.send(shapes);
 
 
+
+MessageBus.receive(function (message, scope, identifier) {
+	if (identifier === 'SELECTED-SHAPE-INDEX')
+	{
+		MessageBus.send(shapes[message]);
+	}
+}, null, 'SELECTED-SHAPE-INDEX');
+
+
+
 //console.log('Im a worker');

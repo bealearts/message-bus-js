@@ -1,4 +1,4 @@
 
 "use strict";
 
-MessageBus.registerWorker(new Worker('model/document-viewer-model.js'));
+MessageBus.registerWorker(new Worker('model/shape-viewer-model.js'));

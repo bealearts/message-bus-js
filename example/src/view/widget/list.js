@@ -5,6 +5,8 @@ var selectedItem;
 
 var onRenderItem = function (dataItem, itemRenderer) {};
 
+var onSeleted = function (index, dataItem) {} ;
+
 
 window.onload = function()
 {
@@ -27,10 +29,12 @@ function updateRenderers(data)
 	
 	data.forEach(function (item) {
 		var newRenderer = itemRenderer.cloneNode(true);
-		;
+
 		newRenderer.setAttribute('height', itemWidth+'%');
 		newRenderer.setAttribute('y', (itemWidth*index)+'%');
-		newRenderer.addEventListener('click', onClick);
+		newRenderer.addEventListener('click', function (event) { 
+			onClick(event, data, item) 
+		});
 		
 		content.appendChild(newRenderer);
 		onRenderItem(item, newRenderer);
@@ -40,7 +44,7 @@ function updateRenderers(data)
 }
 
 
-function onClick(event)
+function onClick(event, data, dataItem)
 {
 	// Clear current selection
 	if (selectedItem)
@@ -48,4 +52,16 @@ function onClick(event)
 	
 	selectedItem = event.currentTarget;
 	selectedItem.setAttribute('class', 'selected');
+	
+	// Find index
+	var index = 0;
+	while(index != data.length)
+	{
+		if (data[index] === dataItem)
+			break;
+		
+		index++;
+	}
+	
+	onSeleted(index, dataItem);
 }
