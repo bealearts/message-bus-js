@@ -229,7 +229,11 @@
 	        	envelope.originUid = uid;
 	        	
 	        	var envelopeJSON = JSON.stringify(envelope);
-	        	target.postMessage(envelopeJSON, '*');
+	        	
+	        	if (target instanceof Worker)
+	        		target.postMessage(envelopeJSON);
+	        	else
+	        		target.postMessage(envelopeJSON, '*');
 	        }
 	        
 	        
