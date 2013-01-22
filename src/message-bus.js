@@ -230,7 +230,7 @@
 	        	
 	        	var envelopeJSON = JSON.stringify(envelope);
 	        	
-	        	if (target instanceof Worker)
+	        	if (!target.parent) // a Worker
 	        		target.postMessage(envelopeJSON);
 	        	else
 	        		target.postMessage(envelopeJSON, '*');
